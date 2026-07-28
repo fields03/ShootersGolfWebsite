@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Features — Shooters Golf</title>
+  <meta name="description" content="Game formats, live leaderboards, GHIN handicaps, shared rounds, and chat — everything Shooters Golf brings to your group." />
+  <link rel="icon" href="assets/logo.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Karla:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <header class="site-header" id="site-header">
+    <div class="site-header__inner">
+      <a class="brand-link" href="index.html">
+        <img src="assets/logo.png" width="40" height="40" alt="" />
+        <span>Shooters Golf</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav" id="site-nav">
+        <a href="index.html">Home</a>
+        <a href="features.html" aria-current="page">Features</a>
+        <a href="help.html">Help</a>
+        <a href="privacy.html">Privacy</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="wrap page-hero">
+      <p class="eyebrow">Features</p>
+      <h1>Everything your group needs on the course.</h1>
+      <p class="lede">From classic formats to live sharing — built around how golfers actually bet, team up, and keep score.</p>
+    </div>
+
+    <section class="section section--tight">
+      <div class="wrap">
+        <div class="section__head">
+          <h2>Game formats</h2>
+          <p>Run the formats your group already plays — without paper, calculators, or post-round arguments.</p>
+        </div>
+        <div class="game-grid" aria-label="Supported game types">
+          <span>Match Play</span>
+          <span>Closeout</span>
+          <span>Nines</span>
+          <span>Nassau</span>
+          <span>Best Ball</span>
+          <span>Stableford</span>
+          <span>Wolf</span>
+          <span>Sixes</span>
+          <span>Skins</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section__head">
+          <h2>How it works</h2>
+          <p>One setup. One share code. Everyone stays in sync.</p>
+        </div>
+        <div class="feature-list">
+          <article class="feature-row">
+            <p class="feature-row__label">Live scoring</p>
+            <div>
+              <h3>Hole-by-hole updates for the whole group</h3>
+              <p>Enter scores as you play. Teammates and opponents see the leaderboard update in real time — on iPhone or in the browser.</p>
+            </div>
+          </article>
+          <article class="feature-row">
+            <p class="feature-row__label">Share codes</p>
+            <div>
+              <h3>Invite anyone with a short code</h3>
+              <p>Start a game, share the code, and co-owners can join the round and follow live results without messy invite chains.</p>
+            </div>
+          </article>
+          <article class="feature-row">
+            <p class="feature-row__label">Handicaps</p>
+            <div>
+              <h3>Course handicaps that match the tee</h3>
+              <p>Use player indexes — including GHIN when linked — and recalculate playing handicaps for the course and tee you’re on.</p>
+            </div>
+          </article>
+          <article class="feature-row">
+            <p class="feature-row__label">Courses</p>
+            <div>
+              <h3>Par, slope, and hole handicaps</h3>
+              <p>Keep course and tee data with the round so net scores, skins, and strokes received stay accurate all eighteen holes.</p>
+            </div>
+          </article>
+          <article class="feature-row">
+            <p class="feature-row__label">Players</p>
+            <div>
+              <h3>Your regulars, ready to go</h3>
+              <p>Save players, mark favorites, and pull them into the next game without retyping names and indexes every Saturday.</p>
+            </div>
+          </article>
+          <article class="feature-row">
+            <p class="feature-row__label">History</p>
+            <div>
+              <h3>Past rounds when you need them</h3>
+              <p>Look back at finished games, results, and who showed up — useful for settling presses or bragging rights later.</p>
+            </div>
+          </article>
+          <article class="feature-row">
+            <p class="feature-row__label">Chat</p>
+            <div>
+              <h3>Talk trash between holes</h3>
+              <p>In-game chat keeps the group connected when you’re spread across the fairway — text and photos included.</p>
+            </div>
+          </article>
+          <article class="feature-row">
+            <p class="feature-row__label">Accounts</p>
+            <div>
+              <h3>Signed in, synced, and yours</h3>
+              <p>Firebase-backed accounts keep your players, games, and history available across devices when you’re signed in.</p>
+            </div>
+          </article>
+        </div>
+
+        <div class="cta-row" style="margin-top: 2.5rem">
+          <a class="btn btn--solid" href="help.html">Need help getting started?</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <a class="site-footer__brand" href="index.html">
+        <img src="assets/logo.png" width="36" height="36" alt="" />
+        Shooters Golf
+      </a>
+      <nav aria-label="Footer">
+        <a href="features.html">Features</a>
+        <a href="help.html">Help</a>
+        <a href="privacy.html">Privacy</a>
+      </nav>
+    </div>
+    <p class="site-footer__copy">&copy; <span id="year"></span> Shooters Golf. All rights reserved.</p>
+  </footer>
+
+  <script src="assets/site.js"></script>
+</body>
+</html>

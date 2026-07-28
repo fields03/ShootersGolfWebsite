@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Help — Shooters Golf</title>
+  <meta name="description" content="Get help with Shooters Golf: accounts, starting a game, share codes, handicaps, GHIN, and live leaderboards." />
+  <link rel="icon" href="assets/logo.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Karla:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <header class="site-header" id="site-header">
+    <div class="site-header__inner">
+      <a class="brand-link" href="index.html">
+        <img src="assets/logo.png" width="40" height="40" alt="" />
+        <span>Shooters Golf</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav" id="site-nav">
+        <a href="index.html">Home</a>
+        <a href="features.html">Features</a>
+        <a href="help.html" aria-current="page">Help</a>
+        <a href="privacy.html">Privacy</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="wrap page-hero">
+      <p class="eyebrow">Help</p>
+      <h1>Answers before the first tee.</h1>
+      <p class="lede">Quick guidance for accounts, sharing a round, handicaps, and following live scores.</p>
+    </div>
+
+    <section class="section section--tight">
+      <div class="wrap">
+        <div class="faq">
+          <details open>
+            <summary>How do I create an account?</summary>
+            <p>Open Shooters Golf and sign up with your email and password. Your profile, players, and game history stay tied to that account so you can sign in on another device later.</p>
+          </details>
+          <details>
+            <summary>How do I start a new game?</summary>
+            <p>Choose your course and tee, add players, pick a format (Match Play, Nassau, Wolf, Stableford, Sixes, and more), then start scoring hole by hole. You can adjust configs for formats that need them before or during the round.</p>
+          </details>
+          <details>
+            <summary>How do share codes work?</summary>
+            <p>When a game is live, the owner can share a short code. Other players enter that code to join as co-owners so they can read the game and follow the leaderboard. Only share codes with people in your group.</p>
+          </details>
+          <details>
+            <summary>Can someone follow the leaderboard without the iPhone app?</summary>
+            <p>Yes. With a share code, players can join the live web leaderboard in a browser and see scores update as they’re entered. Anonymous sign-in is used so each viewer has a secure session for joining.</p>
+          </details>
+          <details>
+            <summary>How are handicaps calculated?</summary>
+            <p>Each player has a handicap index (plus handicaps are supported). When you set up a round, Shooters Golf can calculate course/playing handicaps from the tee’s rating, slope, and par — and you can recalculate if the roster or tee changes.</p>
+          </details>
+          <details>
+            <summary>What is GHIN used for?</summary>
+            <p>If you link a GHIN number (where available), the app can help keep player indexes current instead of typing updates by hand. Handicap updates from GHIN depend on that service being available and correctly configured for the player.</p>
+          </details>
+          <details>
+            <summary>What game formats are supported?</summary>
+            <p>Match Play, Closeout, Nines, Nassau (match and stroke variants), 2-Player Best Ball, Stableford, Wolf, Sixes, and skins-related scoring. Open <a href="features.html">Features</a> for the full list and how each fits into a round.</p>
+          </details>
+          <details>
+            <summary>Scores aren’t updating for everyone. What should I try?</summary>
+            <p>Confirm everyone joined with the same share code and has a working connection. Have the person entering scores stay signed in, wait a moment for sync, then refresh the leaderboard. If one device was offline, reconnect and let pending hole scores sync before comparing cards.</p>
+          </details>
+          <details>
+            <summary>How do I reset my password?</summary>
+            <p>Use the forgot-password option on the sign-in screen. A reset email is sent to the address on your account. Check spam if it doesn’t arrive within a few minutes.</p>
+          </details>
+          <details>
+            <summary>How do I delete my account or data?</summary>
+            <p>You can delete your account and associated data from the app. Chat messages are also cleaned up automatically after 14 days. See the <a href="privacy.html">Privacy Policy</a> for what’s stored and how long it’s kept.</p>
+          </details>
+          <details>
+            <summary>Still stuck?</summary>
+            <p>Describe what you were doing (starting a game, joining with a code, handicap issue, etc.) and reach out through the contact option in the app. Include your platform (iOS or Android) and roughly when it happened so we can help faster.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <a class="site-footer__brand" href="index.html">
+        <img src="assets/logo.png" width="36" height="36" alt="" />
+        Shooters Golf
+      </a>
+      <nav aria-label="Footer">
+        <a href="features.html">Features</a>
+        <a href="help.html">Help</a>
+        <a href="privacy.html">Privacy</a>
+      </nav>
+    </div>
+    <p class="site-footer__copy">&copy; <span id="year"></span> Shooters Golf. All rights reserved.</p>
+  </footer>
+
+  <script src="assets/site.js"></script>
+</body>
+</html>
