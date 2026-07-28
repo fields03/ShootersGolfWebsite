@@ -20,6 +20,8 @@ import {
   where,
   Timestamp,
   GeoPoint,
+  getCountFromServer,
+  documentId,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const ADMIN_EMAIL = "fields.zachary@gmail.com";
@@ -58,6 +60,8 @@ const state = {
   currentCollection: null,
   docs: [],
   selectedPath: null,
+  collectionCounts: {},
+  tableSort: { key: null, dir: "desc" },
 };
 
 const $ = (id) => document.getElementById(id);
@@ -268,12 +272,80 @@ function renderCollectionList() {
     const li = document.createElement("li");
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.textContent = col.label;
+    const count = state.collectionCounts[col.id];
+    btn.textContent =
+      typeof count === "number" ? `${col.label} (${count})` : col.label;
     btn.classList.toggle("active", state.currentCollection?.id === col.id);
     btn.addEventListener("click", () => loadCollection(col));
     li.appendChild(btn);
     list.appendChild(li);
   }
+}
+
+function updatePanelTitle() {
+  if (!state.currentCollection) return;
+  const label = state.currentCollection.label;
+  const id = state.currentCollection.id;
+  if (id === "search" || String(id).includes("/")) {
+    $("panel-title").textContent = label;
+    return;
+  }
+  const count = state.collectionCounts[id];
+  $("panel-title").textContent =
+    typeof count === "number" ? `${label} (${count})` : label;
+}
+
+function sortValue(value) {
+  if (value === null || value === undefined || value === "") return null;
+  if (typeof value === "object" && value._firestore_timestamp) {
+    return value.seconds * 1000 + Math.floor((value.nanoseconds || 0) / 1e6);
+  }
+  if (typeof value === "number") return value;
+  if (typeof value === "boolean") return value ? 1 : 0;
+  if (typeof value === "object") return JSON.stringify(value).toLowerCase();
+  return String(value).toLowerCase();
+}
+
+function sortDocsByColumn(key, dir) {
+  const direction = dir === "asc" ? 1 : -1;
+  state.docs = [...state.docs].sort((a, b) => {
+    const av = sortValue(a[key]);
+    const bv = sortValue(b[key]);
+    if (av === null && bv === null) return 0;
+    if (av === null) return 1;
+    if (bv === null) return -1;
+    if (av < bv) return -1 * direction;
+    if (av > bv) return 1 * direction;
+    return 0;
+  });
+}
+
+function handleColumnSort(key) {
+  if (state.tableSort.key === key) {
+    state.tableSort.dir = state.tableSort.dir === "asc" ? "desc" : "asc";
+  } else {
+    state.tableSort.key = key;
+    state.tableSort.dir = key === "createdAt" || key === "dateStarted" || key === "dateEnded" || key === "requestedAt"
+      ? "desc"
+      : "asc";
+  }
+
+  const sortSelect = $("sort-field");
+  const hasServerField =
+    sortSelect &&
+    !sortSelect.disabled &&
+    [...sortSelect.options].some((opt) => opt.value === key);
+
+  if (hasServerField) {
+    sortSelect.value = key;
+    $("sort-order").value = state.tableSort.dir;
+    refreshDocs();
+    return;
+  }
+
+  // Document id isn't always in the dropdown; still sort locally.
+  sortDocsByColumn(state.tableSort.key, state.tableSort.dir);
+  renderTable();
 }
 
 function renderTable() {
@@ -283,9 +355,29 @@ function renderTable() {
   const head = $("table-head");
   const body = $("table-body");
 
-  head.innerHTML = `<tr>${columns.map((c) => `<th>${c.label}</th>`).join("")}</tr>`;
-  body.innerHTML = "";
+  head.innerHTML = "";
+  const trHead = document.createElement("tr");
+  for (const c of columns) {
+    const th = document.createElement("th");
+    th.className = "sortable";
+    th.scope = "col";
+    th.dataset.key = c.key;
+    let label = c.label;
+    if (state.tableSort.key === c.key) {
+      label += state.tableSort.dir === "asc" ? " ↑" : " ↓";
+      th.classList.add("sorted");
+    }
+    th.textContent = label;
+    th.title = `Sort by ${c.label}`;
+    th.addEventListener("click", (e) => {
+      e.stopPropagation();
+      handleColumnSort(c.key);
+    });
+    trHead.appendChild(th);
+  }
+  head.appendChild(trHead);
 
+  body.innerHTML = "";
   for (const row of state.docs) {
     const tr = document.createElement("tr");
     tr.classList.toggle("selected", row.path === state.selectedPath);
@@ -308,10 +400,10 @@ function populateSortOptions(collection) {
   const options = [];
   if (collection.defaultOrderBy) options.push(collection.defaultOrderBy);
   const extras = {
-    games: ["courseName", "ownerId", "dateEnded"],
-    users: ["email", "name"],
-    courses_public: ["name"],
-    courseDeletionRequests: ["status", "courseName"],
+    games: ["courseName", "ownerId", "dateEnded", "shareCode"],
+    users: ["email", "name", "id"],
+    courses_public: ["name", "city", "state", "id"],
+    courseDeletionRequests: ["status", "courseName", "requestedByEmail"],
   };
   for (const field of extras[collection.id] || []) {
     if (!options.includes(field)) options.push(field);
@@ -328,11 +420,23 @@ function populateSortOptions(collection) {
   for (const field of options) {
     const opt = document.createElement("option");
     opt.value = field;
-    opt.textContent = field;
+    opt.textContent = field === "id" ? "id (UID)" : field;
     if (field === collection.defaultOrderBy) opt.selected = true;
     select.appendChild(opt);
   }
   $("sort-order").value = collection.defaultOrder || "desc";
+}
+
+async function fetchCollectionCount(collectionPath) {
+  if (!collectionPath || collectionPath.includes("/") || collectionPath === "search") {
+    return null;
+  }
+  try {
+    const snap = await getCountFromServer(collection(db, collectionPath));
+    return snap.data().count;
+  } catch {
+    return null;
+  }
 }
 
 async function fetchCollectionDocs(collectionPath, options = {}) {
@@ -344,7 +448,9 @@ async function fetchCollectionDocs(collectionPath, options = {}) {
 
   let snap;
   try {
-    if (orderField) {
+    if (orderField === "id") {
+      snap = await getDocs(query(colRef, orderBy(documentId(), orderDir), limit(max)));
+    } else if (orderField) {
       snap = await getDocs(query(colRef, orderBy(orderField, orderDir), limit(max)));
     } else {
       snap = await getDocs(query(colRef, limit(max)));
@@ -365,7 +471,11 @@ async function fetchCollectionDocs(collectionPath, options = {}) {
 
 async function loadCollection(collectionMeta) {
   state.currentCollection = collectionMeta;
-  $("panel-title").textContent = collectionMeta.label;
+  state.tableSort = {
+    key: collectionMeta.defaultOrderBy || null,
+    dir: collectionMeta.defaultOrder || "desc",
+  };
+  updatePanelTitle();
   populateSortOptions(collectionMeta);
   renderCollectionList();
   await refreshDocs();
@@ -376,11 +486,30 @@ async function refreshDocs() {
   if (!state.currentCollection) return;
 
   try {
-    state.docs = await fetchCollectionDocs(state.currentCollection.id, {
-      limit: $("limit-select").value,
-      orderBy: $("sort-field").value,
-      order: $("sort-order").value,
-    });
+    const collectionId = state.currentCollection.id;
+    const [docs, count] = await Promise.all([
+      fetchCollectionDocs(collectionId, {
+        limit: $("limit-select").value,
+        orderBy: $("sort-field").value,
+        order: $("sort-order").value,
+      }),
+      fetchCollectionCount(collectionId),
+    ]);
+
+    state.docs = docs;
+    if (typeof count === "number") {
+      state.collectionCounts[collectionId] = count;
+    }
+
+    // Keep column-sort indicator in sync with toolbar when sorting via dropdown.
+    const toolbarField = $("sort-field").value;
+    if (toolbarField) {
+      state.tableSort.key = toolbarField;
+      state.tableSort.dir = $("sort-order").value === "asc" ? "asc" : "desc";
+    }
+
+    updatePanelTitle();
+    renderCollectionList();
     renderTable();
   } catch (err) {
     showMessage($("list-message"), err.message);
@@ -636,6 +765,9 @@ function bindEvents() {
   $("login-form").addEventListener("submit", handlePasswordLogin);
   $("sign-out-btn").addEventListener("click", () => signOut(auth));
   $("refresh-btn").addEventListener("click", refreshDocs);
+  $("sort-field").addEventListener("change", refreshDocs);
+  $("sort-order").addEventListener("change", refreshDocs);
+  $("limit-select").addEventListener("change", refreshDocs);
   $("search-btn").addEventListener("click", runSearch);
   $("search-input").addEventListener("keydown", (e) => {
     if (e.key === "Enter") runSearch();

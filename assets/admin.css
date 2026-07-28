@@ -337,6 +337,20 @@ button.ghost {
   color: var(--muted);
 }
 
+.doc-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.doc-table th.sortable:hover {
+  color: var(--green-fairway);
+}
+
+.doc-table th.sortable.sorted {
+  color: var(--green-deep);
+}
+
 .doc-table tr { cursor: pointer; }
 .doc-table tr:hover td { background: #f8faf8; }
 .doc-table tr.selected td { background: #eef4ea; }
