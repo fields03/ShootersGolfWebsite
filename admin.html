@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin — Shooters Golf</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" href="assets/logo.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Karla:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/admin.css" />
+</head>
+<body>
+  <div id="login-screen" class="login-screen">
+    <div class="login-card">
+      <img class="login-logo" src="assets/logo.png" width="72" height="72" alt="" />
+      <h1>Shooters Golf Admin</h1>
+      <p>Sign in with Google. Only the authorized admin account can open this console.</p>
+      <button id="google-login-btn" type="button">Sign in with Google</button>
+      <p id="login-error" class="error hidden"></p>
+      <p class="login-note"><a href="index.html">← Back to site</a></p>
+    </div>
+  </div>
+
+  <div id="app" class="app hidden">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1>Shooters Golf Admin</h1>
+        <span id="status-pill" class="pill">Connected</span>
+        <span id="admin-email" class="admin-email"></span>
+      </div>
+      <div class="search-bar">
+        <input id="search-input" type="search" placeholder="Share code, game ID, user ID, email, owner ID, course name…" />
+        <button id="search-btn" type="button">Search</button>
+      </div>
+      <div class="topbar-right">
+        <a class="link-quiet" href="index.html">Site</a>
+        <button id="sign-out-btn" type="button" class="ghost">Sign out</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <h2>Collections</h2>
+        <ul id="collection-list" class="collection-list"></ul>
+      </aside>
+
+      <main class="main">
+        <div class="toolbar">
+          <h2 id="panel-title">Documents</h2>
+          <div class="toolbar-actions">
+            <label>
+              Sort
+              <select id="sort-field"></select>
+            </label>
+            <label>
+              Order
+              <select id="sort-order">
+                <option value="desc">Newest first</option>
+                <option value="asc">Oldest first</option>
+              </select>
+            </label>
+            <label>
+              Limit
+              <select id="limit-select">
+                <option value="25">25</option>
+                <option value="50" selected>50</option>
+                <option value="100">100</option>
+                <option value="200">200</option>
+              </select>
+            </label>
+            <button id="refresh-btn" type="button">Refresh</button>
+          </div>
+        </div>
+        <div id="list-message" class="message hidden"></div>
+        <div class="table-wrap">
+          <table class="doc-table">
+            <thead id="table-head"></thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+      </main>
+
+      <section class="editor-panel">
+        <div class="editor-header">
+          <h2 id="editor-title">Document</h2>
+          <div class="editor-actions">
+            <button id="save-merge-btn" type="button" title="Update only fields in JSON">Save (merge)</button>
+            <button id="save-replace-btn" type="button" class="danger" title="Replace entire document">Save (replace)</button>
+            <button id="delete-btn" type="button" class="danger-outline">Delete</button>
+          </div>
+        </div>
+        <p id="editor-path" class="doc-path"></p>
+        <div id="subcollections" class="subcollections"></div>
+        <p id="editor-message" class="message hidden"></p>
+        <textarea id="editor-json" spellcheck="false" placeholder="Select a document to view and edit JSON…"></textarea>
+      </section>
+    </div>
+  </div>
+
+  <script type="module" src="assets/admin.js"></script>
+</body>
+</html>

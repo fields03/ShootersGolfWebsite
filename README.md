@@ -2,76 +2,71 @@
 
 Public marketing and help site for **Shooters Golf**, hosted on **GitHub Pages**.
 
+**Live site:** https://fields03.github.io/ShootersGolfWebsite/
+
 Pages:
 
 - `index.html` — Home
 - `features.html` — Features & game formats
 - `help.html` — Help / FAQ
 - `privacy.html` — Privacy policy
+- `admin.html` — Firestore admin (Google sign-in; `fields.zachary@gmail.com` only)
 
-Admin data tools stay in the HandiMan app repo (`web-admin`) and run on your machine only — they are not part of this site.
+The local Admin SDK tool in `HandiMan_Main/web-admin` still works on your machine. The hosted admin uses Firebase Auth + Firestore rules instead (no service account on the web).
+
+## Admin setup (required once)
+
+### 1. Enable Google sign-in
+
+1. Open [Firebase Console](https://console.firebase.google.com) → project **handiman-1b845**
+2. **Build → Authentication → Sign-in method**
+3. Enable **Google**
+4. Save
+
+### 2. Allow your GitHub Pages domain
+
+1. Firebase → **Authentication → Settings → Authorized domains**
+2. Add: `fields03.github.io`
+3. Keep `localhost` for local testing
+
+### 3. Deploy updated Firestore rules
+
+The rules file in `HandiMan_Main/firestore.rules` grants full Firestore access only when signed in as **fields.zachary@gmail.com** (verified email).
+
+Deploy from the HandiMan_Main folder (after installing Firebase CLI if needed):
+
+```bash
+cd "/Users/mac508/Documents/Software Applications/HandiMan_Main"
+npx --yes firebase-tools login
+npx --yes firebase-tools deploy --only firestore:rules
+```
+
+Or paste/publish the updated rules in Firebase Console → **Firestore → Rules**.
+
+Without this step, admin login may succeed but listing/editing data will fail with permission errors.
+
+### 4. Open admin
+
+https://fields03.github.io/ShootersGolfWebsite/admin.html
+
+Sign in with Google as **fields.zachary@gmail.com**. Any other Google account is signed out immediately.
 
 ## Preview locally
 
-From this folder:
-
 ```bash
+cd "/Users/mac508/Documents/Software Applications/HandiMan_Website"
 npx --yes serve .
 ```
 
-Or:
+Then open `/admin.html` as well (still needs authorized domain `localhost` and deployed rules).
 
-```bash
-python3 -m http.server 8080
-```
-
-Then open `http://localhost:3000` (serve) or `http://localhost:8080`.
-
-## Publish on GitHub Pages
-
-### 1. Create a GitHub repository
-
-1. Sign in at [github.com](https://github.com)
-2. Click **New repository**
-3. Name it e.g. `HandiMan_Website` (or `ShootersGolf`)
-4. Leave it **empty** (no README / .gitignore / license)
-5. Create the repository
-
-### 2. Push this folder
-
-In Terminal, from this folder:
+## Publish updates
 
 ```bash
 cd "/Users/mac508/Documents/Software Applications/HandiMan_Website"
-git init
 git add .
-git commit -m "Add Shooters Golf public website"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/HandiMan_Website.git
-git push -u origin main
+git commit -m "Add Firebase Google Auth admin console"
+git push
 ```
 
-Replace `YOUR_USERNAME` and the repo name with yours.
-
-### 3. Turn on Pages
-
-1. On GitHub, open the repo → **Settings** → **Pages**
-2. Under **Build and deployment** → **Source**, choose **Deploy from a branch**
-3. Branch: **main**, folder: **/ (root)**
-4. Save
-
-After a minute or two, the site will be at:
-
-`https://YOUR_USERNAME.github.io/HandiMan_Website/`
-
-(If the repo is named `YOUR_USERNAME.github.io`, the site is at `https://YOUR_USERNAME.github.io/`.)
-
-### 4. Optional next steps
-
-- Add your real support email on the Privacy and Help pages
-- Add App Store / Play Store links on the home page when ready
-- Point a custom domain (e.g. `shootersgolf.com`) under Pages → Custom domain
-
-## Note on paths
-
-Links use relative paths (`features.html`, `assets/...`), so the site works both at the repo root on Pages and when previewed locally.
+Pages usually updates within a minute or two.
