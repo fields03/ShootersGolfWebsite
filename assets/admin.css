@@ -66,9 +66,32 @@ a { color: var(--green-fairway); }
   font-size: 0.98rem;
 }
 
+.login-form {
+  text-align: left;
+}
+
+.login-form label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin: 0 0 6px;
+  color: var(--ink);
+}
+
+.login-form input[type="email"],
+.login-form input[type="password"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #c5cdc0;
+  border-radius: 0.35rem;
+  background: #fff;
+  margin-bottom: 14px;
+}
+
 .login-note {
   margin: 1.25rem 0 0;
   font-size: 0.9rem;
+  text-align: center;
 }
 
 input, select, textarea, button {
@@ -111,8 +134,9 @@ button.ghost {
   border: 1px solid var(--line);
 }
 
-#google-login-btn {
+#login-btn {
   width: 100%;
+  margin-top: 4px;
   background: var(--green-deep);
 }
 

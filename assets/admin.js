@@ -1,8 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
+  signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -78,11 +77,10 @@ function showMessage(el, text, type = "error") {
 }
 
 function isAdminUser(user) {
+  // Email/password accounts may not always have emailVerified set;
+  // the email match is the gate (plus Firestore rules for that email).
   return Boolean(
-    user &&
-      user.email &&
-      user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase() &&
-      user.emailVerified
+    user && user.email && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()
   );
 }
 
@@ -594,22 +592,48 @@ async function rejectNonAdmin(user) {
   );
 }
 
-async function handleGoogleLogin() {
+async function handlePasswordLogin(event) {
+  event.preventDefault();
   showMessage($("login-error"), "");
-  const provider = new GoogleAuthProvider();
-  provider.setCustomParameters({ prompt: "select_account", login_hint: ADMIN_EMAIL });
+
+  const email = ($("email-input").value || "").trim().toLowerCase();
+  const password = $("password-input").value || "";
+
+  if (email !== ADMIN_EMAIL.toLowerCase()) {
+    showMessage($("login-error"), `Only ${ADMIN_EMAIL} can access admin.`);
+    return;
+  }
+  if (!password) {
+    showMessage($("login-error"), "Enter your password.");
+    return;
+  }
+
+  const btn = $("login-btn");
+  btn.disabled = true;
   try {
-    const result = await signInWithPopup(auth, provider);
+    const result = await signInWithEmailAndPassword(auth, email, password);
     if (!isAdminUser(result.user)) {
       await rejectNonAdmin(result.user);
     }
   } catch (err) {
-    showMessage($("login-error"), err.message);
+    const code = err && err.code ? String(err.code) : "";
+    if (code === "auth/invalid-credential" || code === "auth/wrong-password" || code === "auth/user-not-found") {
+      showMessage($("login-error"), "Wrong email or password.");
+    } else if (code === "auth/operation-not-allowed") {
+      showMessage(
+        $("login-error"),
+        "Email/password sign-in is not enabled in Firebase Authentication."
+      );
+    } else {
+      showMessage($("login-error"), err.message || "Sign-in failed.");
+    }
+  } finally {
+    btn.disabled = false;
   }
 }
 
 function bindEvents() {
-  $("google-login-btn").addEventListener("click", handleGoogleLogin);
+  $("login-form").addEventListener("submit", handlePasswordLogin);
   $("sign-out-btn").addEventListener("click", () => signOut(auth));
   $("refresh-btn").addEventListener("click", refreshDocs);
   $("search-btn").addEventListener("click", runSearch);

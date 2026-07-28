@@ -16,8 +16,14 @@
     <div class="login-card">
       <img class="login-logo" src="assets/logo.png" width="72" height="72" alt="" />
       <h1>Shooters Golf Admin</h1>
-      <p>Sign in with Google. Only the authorized admin account can open this console.</p>
-      <button id="google-login-btn" type="button">Sign in with Google</button>
+      <p>Sign in with the admin account. Only <strong>fields.zachary@gmail.com</strong> is allowed.</p>
+      <form id="login-form" class="login-form">
+        <label for="email-input">Email</label>
+        <input id="email-input" type="email" value="fields.zachary@gmail.com" autocomplete="username" readonly required />
+        <label for="password-input">Password</label>
+        <input id="password-input" type="password" placeholder="Your Shooters Golf / Firebase password" autocomplete="current-password" required />
+        <button id="login-btn" type="submit">Sign in</button>
+      </form>
       <p id="login-error" class="error hidden"></p>
       <p class="login-note"><a href="index.html">← Back to site</a></p>
     </div>
