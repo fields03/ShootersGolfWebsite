@@ -10,9 +10,9 @@ Pages:
 - `features.html` — Features & game formats
 - `help.html` — Help / FAQ
 - `privacy.html` — Privacy policy
-- `admin.html` — Firestore admin (email + password; **only** `fields.zachary@gmail.com`)
+- `admin.html` — **The** Firestore admin console (email + password; **only** `fields.zachary@gmail.com`)
 
-The local Admin SDK tool in `HandiMan_Main/web-admin` still works on your machine. The hosted admin uses Firebase Auth + Firestore rules instead (no service account on the web).
+Use this hosted admin for all Firestore browsing/editing (including the Users **admin** checkbox for GHIN access). Do not use the older local `HandiMan_Main/web-admin` tool.
 
 ## Admin setup (required once)
 

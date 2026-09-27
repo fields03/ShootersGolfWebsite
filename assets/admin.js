@@ -170,6 +170,7 @@ function summaryForDoc(collectionId, id, data, path) {
         email: data.email ?? "",
         name: data.name ?? "",
         createdAt: data.createdAt ?? null,
+        admin: data.admin === true,
       };
     case "courses_public":
       return {
@@ -232,6 +233,7 @@ function columnsForCollection(collectionId) {
         { key: "email", label: "Email" },
         { key: "name", label: "Name" },
         { key: "createdAt", label: "Created" },
+        { key: "admin", label: "Admin", type: "checkbox" },
       ];
     case "courses_public":
       return [
@@ -351,7 +353,14 @@ function handleColumnSort(key) {
 function renderTable() {
   const collectionId = state.currentCollection?.id || "search";
   const leaf = collectionId.includes("/") ? collectionLeafId(collectionId) : collectionId;
-  const columns = columnsForCollection(leaf === "search" ? "search" : leaf);
+  let columns = columnsForCollection(leaf === "search" ? "search" : leaf);
+  if (
+    (leaf === "search" || leaf === "users") &&
+    state.docs.some((d) => d.kind === "user" || String(d.path || "").startsWith("users/")) &&
+    !columns.some((c) => c.key === "admin")
+  ) {
+    columns = [...columns, { key: "admin", label: "Admin", type: "checkbox" }];
+  }
   const head = $("table-head");
   const body = $("table-body");
 
@@ -359,20 +368,22 @@ function renderTable() {
   const trHead = document.createElement("tr");
   for (const c of columns) {
     const th = document.createElement("th");
-    th.className = "sortable";
+    th.className = c.type === "checkbox" ? "" : "sortable";
     th.scope = "col";
     th.dataset.key = c.key;
     let label = c.label;
-    if (state.tableSort.key === c.key) {
+    if (c.type !== "checkbox" && state.tableSort.key === c.key) {
       label += state.tableSort.dir === "asc" ? " ↑" : " ↓";
       th.classList.add("sorted");
     }
     th.textContent = label;
-    th.title = `Sort by ${c.label}`;
-    th.addEventListener("click", (e) => {
-      e.stopPropagation();
-      handleColumnSort(c.key);
-    });
+    if (c.type !== "checkbox") {
+      th.title = `Sort by ${c.label}`;
+      th.addEventListener("click", (e) => {
+        e.stopPropagation();
+        handleColumnSort(c.key);
+      });
+    }
     trHead.appendChild(th);
   }
   head.appendChild(trHead);
@@ -383,14 +394,60 @@ function renderTable() {
     tr.classList.toggle("selected", row.path === state.selectedPath);
     for (const col of columns) {
       const td = document.createElement("td");
-      td.textContent = formatCell(row[col.key]);
-      if (col.key === "id" || col.key === "ownerId" || col.key === "gameId") {
-        td.classList.add("mono");
+      if (col.type === "checkbox" && col.key === "admin") {
+        td.classList.add("admin-cell");
+        const label = document.createElement("label");
+        label.className = "admin-checkbox";
+        label.addEventListener("click", (e) => e.stopPropagation());
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = row.admin === true;
+        checkbox.title = "Allow GHIN login & search";
+        checkbox.addEventListener("change", async (e) => {
+          e.stopPropagation();
+          const next = checkbox.checked;
+          checkbox.disabled = true;
+          try {
+            await setUserAdmin(row.path, next);
+            showMessage($("list-message"), next ? "Admin enabled." : "Admin disabled.", "success");
+          } catch (err) {
+            checkbox.checked = !next;
+            showMessage($("list-message"), err.message || String(err));
+          } finally {
+            checkbox.disabled = false;
+          }
+        });
+        const span = document.createElement("span");
+        span.textContent = "admin";
+        label.appendChild(checkbox);
+        label.appendChild(span);
+        td.appendChild(label);
+      } else {
+        td.textContent = formatCell(row[col.key]);
+        if (col.key === "id" || col.key === "ownerId" || col.key === "gameId") {
+          td.classList.add("mono");
+        }
       }
       tr.appendChild(td);
     }
     tr.addEventListener("click", () => openDocument(row.path));
     body.appendChild(tr);
+  }
+}
+
+async function setUserAdmin(path, isAdmin) {
+  const ref = doc(db, path);
+  await setDoc(ref, { admin: !!isAdmin }, { merge: true });
+  const row = state.docs.find((d) => d.path === path);
+  if (row) row.admin = !!isAdmin;
+  if (state.selectedPath === path && $("editor-json").value.trim()) {
+    try {
+      const parsed = JSON.parse($("editor-json").value);
+      parsed.admin = !!isAdmin;
+      $("editor-json").value = JSON.stringify(parsed, null, 2);
+    } catch {
+      // Editor may be mid-edit.
+    }
   }
 }
 

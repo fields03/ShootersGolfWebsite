@@ -360,6 +360,31 @@ button.ghost {
   font-size: 0.8rem;
 }
 
+.doc-table .admin-cell {
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.admin-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: #333;
+  cursor: pointer;
+  user-select: none;
+}
+
+.admin-checkbox input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--green-deep, #2d5a2d);
+  cursor: pointer;
+}
+
 .editor-panel {
   background: var(--white);
   border-left: 1px solid var(--line);
